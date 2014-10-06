@@ -5,13 +5,14 @@ use warnings;
 package Authen::SCRAM::Server;
 # ABSTRACT: RFC 5802 SCRAM Server
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 use Moo;
 
 use Authen::SASL::SASLprep qw/saslprep/;
 use Carp qw/croak/;
 use Crypt::URandom qw/urandom/;
+use Encode qw/encode_utf8/;
 use MIME::Base64 qw/decode_base64/;
 use PBKDF2::Tiny 0.003 qw/derive digest_fcn hmac/;
 use Types::Standard qw/Str Num CodeRef Bool/;
@@ -26,10 +27,11 @@ with 'Authen::SCRAM::Role::Common';
 
 #pod =attr credential_cb (required)
 #pod
-#pod This attribute must contain a code reference that takes a username and returns
-#pod the four user-credential parameters required by SCRAM: C<salt>, C<StoredKey>,
-#pod C<ServerKey>, and C<iteration count>.  The C<salt>, C<StoredKey> and
-#pod C<ServerKey> must be provided as octets (i.e. B<NOT> base64 encoded).
+#pod This attribute must contain a code reference that takes a username (as a
+#pod character string normalized by SASLprep) and returns the four user-credential
+#pod parameters required by SCRAM: C<salt>, C<StoredKey>, C<ServerKey>, and
+#pod C<iteration count>.  The C<salt>, C<StoredKey> and C<ServerKey> must be
+#pod provided as octets (i.e. B<NOT> base64 encoded).
 #pod
 #pod If the username is unknown, it should return an empty list.
 #pod
@@ -50,9 +52,9 @@ has credential_cb => (
 #pod =attr auth_proxy_cb
 #pod
 #pod If provided, this attribute must contain a code reference that takes an
-#pod B<authentication> username and a B<authorization> username, and return
-#pod a true value if the authentication username is permitted to act as
-#pod the authorization username:
+#pod B<authentication> username and a B<authorization> username (both as character
+#pod strings), and return a true value if the authentication username is permitted
+#pod to act as the authorization username:
 #pod
 #pod     $bool = $server->auth_proxy_cb->(
 #pod         $authentication_user, $authorization_user
@@ -197,7 +199,8 @@ sub final_msg {
     }
 
     # confirm channel bindings
-    my $cbind = $self->_base64( $self->_construct_gs2( $self->_get_session("a") ) );
+    my $cbind =
+      $self->_base64( encode_utf8( $self->_construct_gs2( $self->_get_session("a") ) ) );
     if ( $cbind ne $self->_get_session("c") ) {
         croak "SCRAM client-final-message channel binding didn't match";
     }
@@ -263,7 +266,7 @@ Authen::SCRAM::Server - RFC 5802 SCRAM Server
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -299,10 +302,11 @@ This module implements the server-side SCRAM algorithm.
 
 =head2 credential_cb (required)
 
-This attribute must contain a code reference that takes a username and returns
-the four user-credential parameters required by SCRAM: C<salt>, C<StoredKey>,
-C<ServerKey>, and C<iteration count>.  The C<salt>, C<StoredKey> and
-C<ServerKey> must be provided as octets (i.e. B<NOT> base64 encoded).
+This attribute must contain a code reference that takes a username (as a
+character string normalized by SASLprep) and returns the four user-credential
+parameters required by SCRAM: C<salt>, C<StoredKey>, C<ServerKey>, and
+C<iteration count>.  The C<salt>, C<StoredKey> and C<ServerKey> must be
+provided as octets (i.e. B<NOT> base64 encoded).
 
 If the username is unknown, it should return an empty list.
 
@@ -315,9 +319,9 @@ for details.
 =head2 auth_proxy_cb
 
 If provided, this attribute must contain a code reference that takes an
-B<authentication> username and a B<authorization> username, and return
-a true value if the authentication username is permitted to act as
-the authorization username:
+B<authentication> username and a B<authorization> username (both as character
+strings), and return a true value if the authentication username is permitted
+to act as the authorization username:
 
     $bool = $server->auth_proxy_cb->(
         $authentication_user, $authorization_user
@@ -373,6 +377,17 @@ the SCRAM exchange.  This is the client-supplied authorization identity (if one
 was provided and validated) or else the successfully authenticated identity.
 
 =for Pod::Coverage BUILD
+
+=head1 CHARACTER ENCODING CAVEAT
+
+The SCRAM protocol mandates UTF-8 interchange.  However, all methods in this
+module take and return B<character> strings.  You must encode to UTF-8 before
+sending and decode from UTF-8 on receiving according to whatever transport
+mechanism you are using.
+
+This is done to avoid double encoding/decoding problems if your transport is
+already doing UTF-8 encoding or decoding as it constructs outgoing messages or
+parses incoming messages.
 
 =head1 AUTHOR
 

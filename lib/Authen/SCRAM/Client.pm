@@ -5,11 +5,12 @@ use warnings;
 package Authen::SCRAM::Client;
 # ABSTRACT: RFC 5802 SCRAM client
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 use Moo;
 
 use Carp qw/croak/;
+use Encode qw/encode_utf8/;
 use MIME::Base64 qw/decode_base64/;
 use PBKDF2::Tiny 0.003 qw/derive/;
 use Try::Tiny;
@@ -135,10 +136,10 @@ sub _build__gs2_header {
 #pod
 #pod     $client_first_msg = $client->first_msg();
 #pod
-#pod This takes no arguments and returns the C<client-first-message> string to be
-#pod sent to the server to initiate a SCRAM session.  Calling this again will reset
-#pod the internal state and initiate a new session.  This will throw an exception
-#pod should an error occur.
+#pod This takes no arguments and returns the C<client-first-message> character
+#pod string to be sent to the server to initiate a SCRAM session.  Calling this
+#pod again will reset the internal state and initiate a new session.  This will
+#pod throw an exception should an error occur.
 #pod
 #pod =cut
 
@@ -152,16 +153,19 @@ sub first_msg {
     );
     my $c_1_bare = $self->_join_reply(qw/n r/);
     $self->_set_session( _c1b => $c_1_bare );
-    return $self->_gs2_header . $c_1_bare;
+    my $msg = $self->_gs2_header . $c_1_bare;
+    utf8::upgrade($msg); # ensure UTF-8 encoding internally
+    return $msg;
 }
 
 #pod =method final_msg
 #pod
 #pod     $client_final_msg = $client->final_msg( $server_first_msg );
 #pod
-#pod This takes the C<server-first-message> received from the server and returns the
-#pod C<client-final-message> string containing the authentication proof to be sent
-#pod to the server.  This will throw an exception should an error occur.
+#pod This takes the C<server-first-message> character string received from the
+#pod server and returns the C<client-final-message> character string containing the
+#pod authentication proof to be sent to the server.  This will throw an exception
+#pod should an error occur.
 #pod
 #pod =cut
 
@@ -189,14 +193,15 @@ sub final_msg {
     # assemble client-final-wo-proof
     $self->_set_session(
         _s1 => $s_first_msg,
-        c   => $self->_base64( $self->_gs2_header ),
+        c   => $self->_base64( encode_utf8( $self->_gs2_header ) ),
     );
     $self->_set_session( '_c2wop' => $self->_join_reply(qw/c r/) );
 
     # assemble proof
-    my $salt       = decode_base64( $self->_get_session("s") );
-    my $iters      = $self->_get_session("i");
-    my $salted_pw  = derive( $self->digest, $self->_prepped_pass, $salt, $iters );
+    my $salt  = decode_base64( $self->_get_session("s") );
+    my $iters = $self->_get_session("i");
+    my $salted_pw =
+      derive( $self->digest, encode_utf8( $self->_prepped_pass ), $salt, $iters );
     my $client_key = $self->_hmac_fcn->( $salted_pw, "Client Key" );
     my $stored_key = $self->_digest_fcn->($client_key);
 
@@ -216,9 +221,9 @@ sub final_msg {
 #pod
 #pod     $client->validate( $server_final_msg );
 #pod
-#pod This takes the C<server-final-message> received from the server and verifies
-#pod that the server actually has a copy of the client credentials.  It will return
-#pod true if valid and throw an exception, otherwise.
+#pod This takes the C<server-final-message> character string received from the
+#pod server and verifies that the server actually has a copy of the client
+#pod credentials.  It will return true if valid and throw an exception, otherwise.
 #pod
 #pod =cut
 
@@ -259,7 +264,7 @@ Authen::SCRAM::Client - RFC 5802 SCRAM client
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -326,28 +331,40 @@ be substantially larger.
 
     $client_first_msg = $client->first_msg();
 
-This takes no arguments and returns the C<client-first-message> string to be
-sent to the server to initiate a SCRAM session.  Calling this again will reset
-the internal state and initiate a new session.  This will throw an exception
-should an error occur.
+This takes no arguments and returns the C<client-first-message> character
+string to be sent to the server to initiate a SCRAM session.  Calling this
+again will reset the internal state and initiate a new session.  This will
+throw an exception should an error occur.
 
 =head2 final_msg
 
     $client_final_msg = $client->final_msg( $server_first_msg );
 
-This takes the C<server-first-message> received from the server and returns the
-C<client-final-message> string containing the authentication proof to be sent
-to the server.  This will throw an exception should an error occur.
+This takes the C<server-first-message> character string received from the
+server and returns the C<client-final-message> character string containing the
+authentication proof to be sent to the server.  This will throw an exception
+should an error occur.
 
 =head2 validate
 
     $client->validate( $server_final_msg );
 
-This takes the C<server-final-message> received from the server and verifies
-that the server actually has a copy of the client credentials.  It will return
-true if valid and throw an exception, otherwise.
+This takes the C<server-final-message> character string received from the
+server and verifies that the server actually has a copy of the client
+credentials.  It will return true if valid and throw an exception, otherwise.
 
 =for Pod::Coverage BUILD
+
+=head1 CHARACTER ENCODING CAVEAT
+
+The SCRAM protocol mandates UTF-8 interchange.  However, all methods in this
+module take and return B<character> strings.  You must encode to UTF-8 before
+sending and decode from UTF-8 on receiving according to whatever transport
+mechanism you are using.
+
+This is done to avoid double encoding/decoding problems if your transport is
+already doing UTF-8 encoding or decoding as it constructs outgoing messages or
+parses incoming messages.
 
 =head1 AUTHOR
 

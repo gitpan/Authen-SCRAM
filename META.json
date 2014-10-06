@@ -57,6 +57,7 @@
             "Authen::SASL::SASLprep" : "0",
             "Carp" : "0",
             "Crypt::URandom" : "0",
+            "Encode" : "0",
             "MIME::Base64" : "0",
             "Moo" : "0",
             "Moo::Role" : "0",
@@ -89,19 +90,19 @@
    "provides" : {
       "Authen::SCRAM" : {
          "file" : "lib/Authen/SCRAM.pm",
-         "version" : "0.001"
+         "version" : "0.002"
       },
       "Authen::SCRAM::Client" : {
          "file" : "lib/Authen/SCRAM/Client.pm",
-         "version" : "0.001"
+         "version" : "0.002"
       },
       "Authen::SCRAM::Role::Common" : {
          "file" : "lib/Authen/SCRAM/Role/Common.pm",
-         "version" : "0.001"
+         "version" : "0.002"
       },
       "Authen::SCRAM::Server" : {
          "file" : "lib/Authen/SCRAM/Server.pm",
-         "version" : "0.001"
+         "version" : "0.002"
       }
    },
    "release_status" : "stable",
@@ -116,7 +117,7 @@
          "web" : "https://github.com/dagolden/Authen-SCRAM"
       }
    },
-   "version" : "0.001",
+   "version" : "0.002",
    "x_authority" : "cpan:DAGOLDEN"
 }
 

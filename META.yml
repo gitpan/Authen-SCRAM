@@ -32,22 +32,23 @@ no_index:
 provides:
   Authen::SCRAM:
     file: lib/Authen/SCRAM.pm
-    version: '0.001'
+    version: '0.002'
   Authen::SCRAM::Client:
     file: lib/Authen/SCRAM/Client.pm
-    version: '0.001'
+    version: '0.002'
   Authen::SCRAM::Role::Common:
     file: lib/Authen/SCRAM/Role/Common.pm
-    version: '0.001'
+    version: '0.002'
   Authen::SCRAM::Server:
     file: lib/Authen/SCRAM/Server.pm
-    version: '0.001'
+    version: '0.002'
 recommends:
   String::Compare::ConstantTime: '0.310'
 requires:
   Authen::SASL::SASLprep: '0'
   Carp: '0'
   Crypt::URandom: '0'
+  Encode: '0'
   MIME::Base64: '0'
   Moo: '0'
   Moo::Role: '0'
@@ -62,5 +63,5 @@ resources:
   bugtracker: https://github.com/dagolden/Authen-SCRAM/issues
   homepage: https://github.com/dagolden/Authen-SCRAM
   repository: https://github.com/dagolden/Authen-SCRAM.git
-version: '0.001'
+version: '0.002'
 x_authority: cpan:DAGOLDEN

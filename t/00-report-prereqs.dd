@@ -31,6 +31,7 @@ do { my $x = {
                                       'Authen::SASL::SASLprep' => '0',
                                       'Carp' => '0',
                                       'Crypt::URandom' => '0',
+                                      'Encode' => '0',
                                       'MIME::Base64' => '0',
                                       'Moo' => '0',
                                       'Moo::Role' => '0',

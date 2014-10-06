@@ -1,6 +1,7 @@
 requires "Authen::SASL::SASLprep" => "0";
 requires "Carp" => "0";
 requires "Crypt::URandom" => "0";
+requires "Encode" => "0";
 requires "MIME::Base64" => "0";
 requires "Moo" => "0";
 requires "Moo::Role" => "0";
