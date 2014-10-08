@@ -5,7 +5,7 @@ use warnings;
 package Authen::SCRAM::Server;
 # ABSTRACT: RFC 5802 SCRAM Server
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 use Moo;
 
@@ -85,13 +85,17 @@ with 'Authen::SCRAM::Role::Common';
 #pod Name of a digest function available via L<PBKDF2::Tiny>.  Valid values are
 #pod SHA-1, SHA-224, SHA-256, SHA-384, or SHA-512.  Defaults to SHA-1.
 #pod
-#pod =cut
-
 #pod =attr nonce_size
 #pod
 #pod Size of the client-generated nonce, in bits.  Defaults to 192.
 #pod The server-nonce will be appended, so the final nonce size will
 #pod be substantially larger.
+#pod
+#pod =attr skip_saslprep
+#pod
+#pod A boolean that defaults to false.  If set to true, usernames and passwords will
+#pod not be normalized through SASLprep.  This is a deviation from the RFC5802 spec
+#pod and is not recommended.
 #pod
 #pod =cut
 
@@ -266,7 +270,7 @@ Authen::SCRAM::Server - RFC 5802 SCRAM Server
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 SYNOPSIS
 
@@ -341,6 +345,12 @@ SHA-1, SHA-224, SHA-256, SHA-384, or SHA-512.  Defaults to SHA-1.
 Size of the client-generated nonce, in bits.  Defaults to 192.
 The server-nonce will be appended, so the final nonce size will
 be substantially larger.
+
+=head2 skip_saslprep
+
+A boolean that defaults to false.  If set to true, usernames and passwords will
+not be normalized through SASLprep.  This is a deviation from the RFC5802 spec
+and is not recommended.
 
 =head1 METHODS
 
