@@ -32,16 +32,16 @@ no_index:
 provides:
   Authen::SCRAM:
     file: lib/Authen/SCRAM.pm
-    version: '0.003'
+    version: '0.004'
   Authen::SCRAM::Client:
     file: lib/Authen/SCRAM/Client.pm
-    version: '0.003'
+    version: '0.004'
   Authen::SCRAM::Role::Common:
     file: lib/Authen/SCRAM/Role/Common.pm
-    version: '0.003'
+    version: '0.004'
   Authen::SCRAM::Server:
     file: lib/Authen/SCRAM/Server.pm
-    version: '0.003'
+    version: '0.004'
 recommends:
   String::Compare::ConstantTime: '0.310'
 requires:
@@ -50,8 +50,8 @@ requires:
   Crypt::URandom: '0'
   Encode: '0'
   MIME::Base64: '0'
-  Moo: '0'
-  Moo::Role: '0'
+  Moo: '1.001000'
+  Moo::Role: '1.001000'
   PBKDF2::Tiny: '0.003'
   Try::Tiny: '0'
   Types::Standard: '0'
@@ -63,5 +63,5 @@ resources:
   bugtracker: https://github.com/dagolden/Authen-SCRAM/issues
   homepage: https://github.com/dagolden/Authen-SCRAM
   repository: https://github.com/dagolden/Authen-SCRAM.git
-version: '0.003'
+version: '0.004'
 x_authority: cpan:DAGOLDEN

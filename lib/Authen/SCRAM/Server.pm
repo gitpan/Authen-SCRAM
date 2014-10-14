@@ -5,9 +5,9 @@ use warnings;
 package Authen::SCRAM::Server;
 # ABSTRACT: RFC 5802 SCRAM Server
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
-use Moo;
+use Moo 1.001000;
 
 use Authen::SASL::SASLprep qw/saslprep/;
 use Carp qw/croak/;
@@ -250,7 +250,7 @@ sub authorization_id {
     my ($self) = @_;
     return '' unless $self->_get_session("_proof_ok");
     my $authz = $self->_get_session("a");
-    return length($authz) ? $authz : $self->_get_session("n");
+    return ( defined($authz) && length($authz) ) ? $authz : $self->_get_session("n");
 }
 
 1;
@@ -270,7 +270,7 @@ Authen::SCRAM::Server - RFC 5802 SCRAM Server
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 SYNOPSIS
 

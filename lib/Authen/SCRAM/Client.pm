@@ -5,9 +5,9 @@ use warnings;
 package Authen::SCRAM::Client;
 # ABSTRACT: RFC 5802 SCRAM client
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
-use Moo;
+use Moo 1.001000;
 
 use Carp qw/croak/;
 use Encode qw/encode_utf8/;
@@ -268,7 +268,7 @@ Authen::SCRAM::Client - RFC 5802 SCRAM client
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 SYNOPSIS
 

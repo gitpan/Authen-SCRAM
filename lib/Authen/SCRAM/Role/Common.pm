@@ -4,9 +4,9 @@ use warnings;
 
 package Authen::SCRAM::Role::Common;
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
-use Moo::Role;
+use Moo::Role 1.001000;
 
 use Authen::SASL::SASLprep qw/saslprep/;
 use Carp qw/croak/;
@@ -157,7 +157,10 @@ sub _client_sig {
 
 sub _construct_gs2 {
     my ( $self, $authz ) = @_;
-    my $maybe = length($authz) ? ( "a=" . $self->_encode_name($authz) ) : "";
+    my $maybe =
+        ( defined($authz) && length($authz) )
+      ? ( "a=" . $self->_encode_name($authz) )
+      : "";
     return "n,$maybe,";
 }
 
