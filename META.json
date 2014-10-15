@@ -90,19 +90,19 @@
    "provides" : {
       "Authen::SCRAM" : {
          "file" : "lib/Authen/SCRAM.pm",
-         "version" : "0.004"
+         "version" : "0.005"
       },
       "Authen::SCRAM::Client" : {
          "file" : "lib/Authen/SCRAM/Client.pm",
-         "version" : "0.004"
+         "version" : "0.005"
       },
       "Authen::SCRAM::Role::Common" : {
          "file" : "lib/Authen/SCRAM/Role/Common.pm",
-         "version" : "0.004"
+         "version" : "0.005"
       },
       "Authen::SCRAM::Server" : {
          "file" : "lib/Authen/SCRAM/Server.pm",
-         "version" : "0.004"
+         "version" : "0.005"
       }
    },
    "release_status" : "stable",
@@ -117,7 +117,7 @@
          "web" : "https://github.com/dagolden/Authen-SCRAM"
       }
    },
-   "version" : "0.004",
+   "version" : "0.005",
    "x_authority" : "cpan:DAGOLDEN"
 }
 
